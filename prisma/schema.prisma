@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Event {
+  id              String   @id @default(cuid())
+  sourceId        String   @map("source_id")
+  externalId      String   @default("") @map("external_id")
+  title           String
+  description     String   @default("")
+  start           DateTime
+  end             DateTime
+  allDay          Boolean  @default(false) @map("all_day")
+  timezoneStr     String   @default("UTC") @map("timezone_str")
+  rrule           String   @default("")
+  isRecurring     Boolean  @default(false) @map("is_recurring")
+
+  // Location
+  locationRaw     String   @default("") @map("location_raw")
+  locationId      String?  @map("location_id")
+  latitude        Float?
+  longitude       Float?
+  isVirtual       Boolean  @default(false) @map("is_virtual")
+  virtualUrl      String   @default("") @map("virtual_url")
+  virtualPlatform String   @default("") @map("virtual_platform")
+
+  // Participants
+  organizerName   String   @default("") @map("organizer_name")
+  organizerEmail  String   @default("") @map("organizer_email")
+  attendees       Json     @default("[]")
+  attendeeCount   Int      @default(0) @map("attendee_count")
+
+  // Status
+  status          String   @default("confirmed")
+  visibility      String   @default("default")
+
+  // r* tool integration
+  rToolSource     String?  @map("r_tool_source")
+  rToolEntityId   String?  @map("r_tool_entity_id")
+  eventCategory   String?  @map("event_category")
+  metadata        Json?
+
+  // Timestamps
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  source          CalendarSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  location        Location?      @relation(fields: [locationId], references: [id])
+
+  @@index([sourceId])
+  @@index([start, end])
+  @@index([rToolSource, rToolEntityId])
+  @@index([locationId])
+  @@map("events")
+}
+
+model CalendarSource {
+  id              String   @id @default(cuid())
+  name            String
+  sourceType      String   @map("source_type")
+  color           String   @default("#6b7280")
+  isVisible       Boolean  @default(true) @map("is_visible")
+  isActive        Boolean  @default(true) @map("is_active")
+  lastSyncedAt    DateTime? @map("last_synced_at")
+  syncError       String   @default("") @map("sync_error")
+  syncConfig      Json?    @map("sync_config")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  events          Event[]
+
+  @@map("calendar_sources")
+}
+
+model Location {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  granularity     Int      @default(0)
+  parentId        String?  @map("parent_id")
+  latitude        Float?
+  longitude       Float?
+  timezoneStr     String   @default("UTC") @map("timezone_str")
+
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  // Self-relation
+  parent          Location?  @relation("LocationHierarchy", fields: [parentId], references: [id])
+  children        Location[] @relation("LocationHierarchy")
+  events          Event[]
+
+  @@index([parentId])
+  @@map("locations")
+}

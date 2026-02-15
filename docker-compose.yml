@@ -1,0 +1,62 @@
+services:
+  rcal:
+    build: .
+    container_name: rcal-online
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=postgresql://rcal:${POSTGRES_PASSWORD}@rcal-postgres:5432/rcal
+    depends_on:
+      rcal-postgres:
+        condition: service_healthy
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.rcal.rule=Host(`rcal.jeffemmett.com`)"
+      - "traefik.http.routers.rcal.entrypoints=web"
+      - "traefik.http.services.rcal.loadbalancer.server.port=3000"
+    networks:
+      - traefik-public
+      - rcal-internal
+
+  rcal-postgres:
+    image: postgres:16-alpine
+    container_name: rcal-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=rcal
+      - POSTGRES_USER=rcal
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - rcal-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rcal -d rcal"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
+    networks:
+      - rcal-internal
+
+volumes:
+  rcal-pgdata:
+
+networks:
+  traefik-public:
+    external: true
+  rcal-internal:
+    driver: bridge
