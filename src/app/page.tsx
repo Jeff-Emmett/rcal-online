@@ -183,6 +183,8 @@ export default function LandingPage() {
             <a href="https://rnetwork.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rNetwork</a>
             <a href="https://rinbox.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rInbox</a>
             <a href="https://rstack.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rStack</a>
+            <a href="https://rauctions.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rAuctions</a>
+            <a href="https://rpubs.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rPubs</a>
           </div>
           <p className="text-center text-xs text-gray-600">
             Part of the r* ecosystem — collaborative tools for communities.
