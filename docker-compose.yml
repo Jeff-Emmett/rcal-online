@@ -1,11 +1,14 @@
 services:
   rcal:
-    build: .
+    build:
+      context: ..
+      dockerfile: rcal-online/Dockerfile
     container_name: rcal-online
     restart: unless-stopped
     environment:
       - NODE_ENV=production
       - DATABASE_URL=postgresql://rcal:${POSTGRES_PASSWORD}@rcal-postgres:5432/rcal
+      - NEXT_PUBLIC_ENCRYPTID_SERVER_URL=${NEXT_PUBLIC_ENCRYPTID_SERVER_URL:-https://encryptid.jeffemmett.com}
     depends_on:
       rcal-postgres:
         condition: service_healthy

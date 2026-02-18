@@ -4,17 +4,27 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package.json package-lock.json* ./
+COPY rcal-online/package.json rcal-online/package-lock.json* ./
+
+# Copy prisma schema
+COPY rcal-online/prisma ./prisma/
+
+# Copy local SDK dependency (package.json references file:../encryptid-sdk)
+COPY encryptid-sdk /encryptid-sdk/
 
 # Install dependencies
-RUN npm ci
+RUN npm ci || npm install
 
-# Copy prisma schema and generate client
-COPY prisma ./prisma/
+# Ensure SDK is properly linked in node_modules
+RUN rm -rf node_modules/@encryptid/sdk && \
+    mkdir -p node_modules/@encryptid && \
+    cp -r /encryptid-sdk node_modules/@encryptid/sdk
+
+# Generate Prisma client
 RUN npx prisma generate
 
 # Copy source files
-COPY . .
+COPY rcal-online/ .
 
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED=1

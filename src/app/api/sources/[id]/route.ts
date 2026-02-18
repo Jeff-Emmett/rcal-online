@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { requireAuth, isAuthed } from '@/lib/auth'
 
 export async function GET(
   _request: NextRequest,
@@ -30,6 +31,9 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const auth = await requireAuth(request)
+    if (!isAuthed(auth)) return auth
+
     const body = await request.json()
 
     const source = await prisma.calendarSource.update({
@@ -51,10 +55,13 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const auth = await requireAuth(request)
+    if (!isAuthed(auth)) return auth
+
     await prisma.calendarSource.delete({ where: { id: params.id } })
     return new NextResponse(null, { status: 204 })
   } catch (err) {

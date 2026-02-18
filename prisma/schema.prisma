@@ -7,6 +7,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id              String   @id @default(cuid())
+  did             String   @unique
+  username        String?
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  sources         CalendarSource[]
+
+  @@map("users")
+}
+
 model Event {
   id              String   @id @default(cuid())
   sourceId        String   @map("source_id")
@@ -71,11 +83,15 @@ model CalendarSource {
   syncError       String   @default("") @map("sync_error")
   syncConfig      Json?    @map("sync_config")
 
+  createdById     String?  @map("created_by_id")
+  createdBy       User?    @relation(fields: [createdById], references: [id])
+
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   events          Event[]
 
+  @@index([createdById])
   @@map("calendar_sources")
 }
 

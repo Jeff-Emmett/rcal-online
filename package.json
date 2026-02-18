@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@encryptid/sdk": "file:../encryptid-sdk",
     "@prisma/client": "^6.19.2",
     "@tanstack/react-query": "^5.17.0",
     "clsx": "^2.1.0",
