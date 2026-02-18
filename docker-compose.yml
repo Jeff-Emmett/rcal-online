@@ -21,7 +21,7 @@ services:
       - /tmp
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.rcal.rule=Host(`rcal.jeffemmett.com`) || Host(`rcal.online`) || Host(`www.rcal.online`)"
+      - "traefik.http.routers.rcal.rule=Host(`rcal.jeffemmett.com`) || Host(`rcal.online`) || Host(`www.rcal.online`) || Host(`booking.xhiva.art`)"
       - "traefik.http.routers.rcal.entrypoints=web"
       - "traefik.http.services.rcal.loadbalancer.server.port=3000"
     networks:
