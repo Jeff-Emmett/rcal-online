@@ -18,6 +18,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${inter.variable} ${jetbrainsMono.variable}`}>
+      <head>
+        <script defer src="https://rdata.online/collect.js" data-website-id="ea665b3c-ac4f-40cd-918e-1f99c5c69fac" />
+      </head>
       <body className="bg-gray-50 dark:bg-gray-900 min-h-screen">
         <Providers>
           {children}

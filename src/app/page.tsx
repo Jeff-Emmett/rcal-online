@@ -176,6 +176,7 @@ export default function LandingPage() {
             <a href="https://rfunds.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rFunds</a>
             <a href="https://rtrips.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rTrips</a>
             <a href="https://rcart.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rCart</a>
+            <a href="https://rchoices.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rChoices</a>
             <a href="https://rwallet.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rWallet</a>
             <a href="https://rfiles.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rFiles</a>
             <a href="https://rtube.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rTube</a>
@@ -185,6 +186,7 @@ export default function LandingPage() {
             <a href="https://rstack.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rStack</a>
             <a href="https://rauctions.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rAuctions</a>
             <a href="https://rpubs.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rPubs</a>
+            <a href="https://rdata.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rData</a>
           </div>
           <p className="text-center text-xs text-gray-600">
             Part of the r* ecosystem — collaborative tools for communities.
