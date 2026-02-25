@@ -1,25 +1,14 @@
 import Link from 'next/link'
-import { AppSwitcher } from '@/components/AppSwitcher'
+import { Header } from '@/components/Header'
 import { EcosystemFooter } from '@/components/EcosystemFooter'
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Nav */}
-      <nav className="sticky top-0 z-50 border-b border-gray-800 bg-gray-950/90 backdrop-blur">
-        <div className="mx-auto max-w-5xl px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <AppSwitcher current="cal" />
-            <Link href="/" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-sm font-bold text-white">
-                rC
-              </div>
-              <span className="text-lg font-semibold">
-                <span className="text-blue-400">r</span>Cal
-              </span>
-            </Link>
-          </div>
-          <div className="flex items-center gap-4">
+      <Header
+        current="cal"
+        actions={
+          <>
             <Link
               href="/calendar"
               className="text-sm text-gray-400 hover:text-white transition-colors"
@@ -32,15 +21,9 @@ export default function LandingPage() {
             >
               Create Calendar
             </Link>
-            <a
-              href="https://auth.ridentity.online"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              Sign In
-            </a>
-          </div>
-        </div>
-      </nav>
+          </>
+        }
+      />
 
       {/* Hero */}
       <section className="px-6 py-20 text-center">
