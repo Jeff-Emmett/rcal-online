@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, Menu, Calendar, Moon, Settings, MapPin, Zoom
 import { useCalendarStore } from '@/lib/store'
 import { TemporalGranularity, TEMPORAL_GRANULARITY_LABELS } from '@/lib/types'
 import { clsx } from 'clsx'
+import { AppSwitcher } from '@/components/AppSwitcher'
 
 interface CalendarHeaderProps {
   onToggleSidebar: () => void
@@ -60,6 +61,8 @@ export function CalendarHeader({ onToggleSidebar, sidebarOpen }: CalendarHeaderP
       <div className="flex items-center justify-between px-4 py-3">
         {/* Left section */}
         <div className="flex items-center gap-4">
+          <AppSwitcher current="cal" />
+
           <button
             onClick={onToggleSidebar}
             className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
