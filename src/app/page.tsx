@@ -1,30 +1,9 @@
 import Link from 'next/link'
-import { Header } from '@/components/Header'
 import { EcosystemFooter } from '@/components/EcosystemFooter'
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
-      <Header
-        current="cal"
-        actions={
-          <>
-            <Link
-              href="/calendar"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              Demo
-            </Link>
-            <Link
-              href="/calendar"
-              className="text-sm px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg transition-colors font-medium text-white"
-            >
-              Create Calendar
-            </Link>
-          </>
-        }
-      />
-
       {/* Hero */}
       <section className="px-6 py-20 text-center">
         <div className="mx-auto max-w-3xl">

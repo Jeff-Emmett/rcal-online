@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/providers'
+import { Header } from '@/components/Header'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
@@ -26,6 +27,7 @@ export default function RootLayout({
       </head>
       <body className="bg-gray-900 min-h-screen text-gray-100">
         <Providers>
+          <Header current="cal" />
           {children}
         </Providers>
       </body>
