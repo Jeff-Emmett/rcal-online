@@ -9,6 +9,9 @@ const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mon
 export const metadata: Metadata = {
   title: 'rCal | Relational Calendar',
   description: 'Spatiotemporal calendar with lunar overlay and multi-granularity navigation',
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📅</text></svg>",
+  },
 }
 
 export default function RootLayout({
@@ -21,7 +24,7 @@ export default function RootLayout({
       <head>
         <script defer src="https://rdata.online/collect.js" data-website-id="ea665b3c-ac4f-40cd-918e-1f99c5c69fac" />
       </head>
-      <body className="bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <body className="bg-gray-900 min-h-screen text-gray-100">
         <Providers>
           {children}
         </Providers>
