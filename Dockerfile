@@ -28,6 +28,7 @@ COPY rcal-online/ .
 
 # Build the application
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max_old_space_size=4096"
 RUN npm run build
 
 # Production stage
