@@ -5,6 +5,8 @@ import { useCalendarStore } from '@/lib/store'
 import { useEvents } from '@/hooks/useEvents'
 import { TemporalGranularity } from '@/lib/types'
 import { SplitView } from '@/components/calendar/SplitView'
+import { DayView } from '@/components/calendar/DayView'
+import { WeekView } from '@/components/calendar/WeekView'
 import { MonthView } from '@/components/calendar/MonthView'
 import { SeasonView } from '@/components/calendar/SeasonView'
 import { YearView } from '@/components/calendar/YearView'
@@ -58,12 +60,19 @@ function CalendarView() {
   switch (temporalGranularity) {
     case TemporalGranularity.YEAR:
     case TemporalGranularity.DECADE:
+    case TemporalGranularity.CENTURY:
+    case TemporalGranularity.COSMIC:
       return <YearView />
     case TemporalGranularity.SEASON:
       return <SeasonView />
     case TemporalGranularity.MONTH:
+      return <MonthView />
     case TemporalGranularity.WEEK:
+      return <WeekView />
     case TemporalGranularity.DAY:
+    case TemporalGranularity.HOUR:
+    case TemporalGranularity.MOMENT:
+      return <DayView />
     default:
       return <MonthView />
   }

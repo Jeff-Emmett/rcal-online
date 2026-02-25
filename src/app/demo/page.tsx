@@ -13,6 +13,7 @@ import { ContextTab } from '@/components/tabs/ContextTab'
 import { useCalendarStore, useEffectiveSpatialGranularity } from '@/lib/store'
 import { TemporalGranularity, TEMPORAL_GRANULARITY_LABELS, GRANULARITY_LABELS } from '@/lib/types'
 import type { TabView } from '@/lib/types'
+import { DemoDataSeeder } from '@/components/DemoDataSeeder'
 
 export default function DemoPage() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -69,6 +70,9 @@ export default function DemoPage() {
 
   return (
     <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Seed demo data into React Query cache */}
+      <DemoDataSeeder />
+
       {/* Sidebar */}
       {sidebarOpen && (
         <CalendarSidebar onClose={() => setSidebarOpen(false)} />

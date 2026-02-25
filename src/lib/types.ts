@@ -245,9 +245,15 @@ export interface EventListItem {
   all_day: boolean
   source: string
   source_color: string
+  source_type?: string
   location_raw: string
+  location_breadcrumb?: string | null
   is_virtual: boolean
   status: string
+  // Coordinates (returned by API, used by map)
+  latitude?: number | null
+  longitude?: number | null
+  coordinates?: { latitude: number; longitude: number } | null
   // Lunar data (computed client-side)
   lunarPhase?: LunarPhaseName
   lunarEmoji?: string

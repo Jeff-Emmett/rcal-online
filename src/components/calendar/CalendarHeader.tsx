@@ -5,6 +5,7 @@ import { useCalendarStore } from '@/lib/store'
 import { TemporalGranularity, TEMPORAL_GRANULARITY_LABELS } from '@/lib/types'
 import { clsx } from 'clsx'
 import { AppSwitcher } from '@/components/AppSwitcher'
+import { ViewSwitcher } from './ViewSwitcher'
 
 interface CalendarHeaderProps {
   onToggleSidebar: () => void
@@ -41,6 +42,11 @@ export function CalendarHeader({ onToggleSidebar, sidebarOpen }: CalendarHeaderP
         const weekEnd = new Date(weekStart)
         weekEnd.setDate(weekStart.getDate() + 6)
         return `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} -- ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+      }
+      case TemporalGranularity.SEASON: {
+        const quarter = Math.ceil((currentDate.getMonth() + 1) / 3)
+        const seasonNames = ['Winter', 'Spring', 'Summer', 'Fall']
+        return `${seasonNames[quarter - 1]} ${currentDate.getFullYear()}`
       }
       case TemporalGranularity.DAY:
         return currentDate.toLocaleDateString('en-US', {
@@ -132,8 +138,10 @@ export function CalendarHeader({ onToggleSidebar, sidebarOpen }: CalendarHeaderP
           </button>
         </div>
 
-        {/* Right section - settings */}
+        {/* View preset switcher */}
         <div className="flex items-center gap-3">
+          <ViewSwitcher />
+
           {/* Show lunar overlay toggle */}
           <button
             onClick={() => setShowLunarOverlay(!showLunarOverlay)}

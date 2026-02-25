@@ -1,7 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
-import { createPortal } from 'react-dom'
+import { useMemo, useState } from 'react'
 import { useCalendarStore } from '@/lib/store'
 import { TemporalGranularity } from '@/lib/types'
 import { clsx } from 'clsx'
@@ -137,7 +136,7 @@ function toMondayFirst(dayOfWeek: number): number {
 // Weekday labels starting with Monday
 const WEEKDAY_LABELS_MONDAY_FIRST = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su']
 
-// Glance-style vertical month column - FULLSCREEN version with weekday alignment
+// Glance-style vertical month column (inline, not fullscreen)
 interface GlanceMonthColumnProps {
   year: number
   month: number
@@ -163,7 +162,6 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
   const calendarGrid = useMemo(() => {
     const slots: CalendarSlot[] = []
 
-    // Gregorian: Variable days, variable start day
     const firstDay = new Date(year, month - 1, 1)
     const lastDay = new Date(year, month, 0)
     const daysInMonth = lastDay.getDate()
@@ -199,13 +197,13 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
   const monthColor = MONTH_COLORS[month - 1]
 
   return (
-    <div className="flex flex-col flex-1 min-w-[7rem]">
+    <div className="flex flex-col flex-1 min-w-[5.5rem]">
       {/* Month header */}
       <div
-        className="text-center py-2 font-bold text-white flex-shrink-0"
+        className="text-center py-1.5 font-bold text-white flex-shrink-0 text-sm"
         style={{ backgroundColor: monthColor }}
       >
-        <div className="text-base">{monthName}</div>
+        {monthName}
       </div>
 
       {/* Days grid - aligned by weekday */}
@@ -214,7 +212,7 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
         style={{ borderColor: `${monthColor}40` }}
       >
         {calendarGrid.map((slot, idx) => {
-          const isWeekend = slot.dayOfWeek >= 5 // Saturday=5, Sunday=6
+          const isWeekend = slot.dayOfWeek >= 5
           const isSunday = slot.dayOfWeek === 6
           const isMonday = slot.dayOfWeek === 0
 
@@ -223,7 +221,7 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
               <div
                 key={`empty-${idx}`}
                 className={clsx(
-                  'flex-1 min-h-[1.25rem] w-full flex items-center gap-2 px-2 border-b last:border-b-0',
+                  'flex-1 min-h-[1rem] w-full flex items-center gap-1 px-1 border-b last:border-b-0',
                   isSunday && 'bg-red-50/50 dark:bg-red-900/10',
                   isWeekend && !isSunday && 'bg-blue-50/50 dark:bg-blue-900/10',
                   !isWeekend && 'bg-gray-50 dark:bg-gray-800/50',
@@ -231,7 +229,7 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
                 )}
                 style={{ borderColor: `${monthColor}20` }}
               >
-                <span className="text-[10px] font-medium w-5 flex-shrink-0 text-gray-300 dark:text-gray-600">
+                <span className="text-[9px] font-medium w-4 flex-shrink-0 text-gray-300 dark:text-gray-600">
                   {WEEKDAY_LABELS_MONDAY_FIRST[slot.dayOfWeek]}
                 </span>
               </div>
@@ -243,7 +241,7 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
               key={slot.day}
               onClick={() => onDayClick?.(slot.date)}
               className={clsx(
-                'flex-1 min-h-[1.25rem] w-full flex items-center gap-2 px-2 transition-all',
+                'flex-1 min-h-[1rem] w-full flex items-center gap-1 px-1 transition-all',
                 'hover:brightness-95 border-b last:border-b-0',
                 slot.isToday && 'ring-2 ring-inset font-bold',
                 isSunday && !slot.isToday && 'bg-red-50 dark:bg-red-900/20',
@@ -261,7 +259,7 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
               }}
             >
               <span className={clsx(
-                'text-[10px] font-medium w-5 flex-shrink-0',
+                'text-[9px] font-medium w-4 flex-shrink-0',
                 isSunday && !slot.isToday && 'text-red-500',
                 isWeekend && !isSunday && !slot.isToday && 'text-blue-500',
                 !isWeekend && !slot.isToday && 'text-gray-400 dark:text-gray-500'
@@ -269,14 +267,10 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
                 {WEEKDAY_LABELS_MONDAY_FIRST[slot.dayOfWeek]}
               </span>
               <span className={clsx(
-                'text-sm font-semibold w-5 flex-shrink-0',
+                'text-xs font-semibold w-4 flex-shrink-0',
                 !slot.isToday && 'text-gray-800 dark:text-gray-200'
               )}>
                 {slot.day}
-              </span>
-              {/* Space for events/location */}
-              <span className="flex-1 text-xs text-gray-500 dark:text-gray-400 truncate text-left">
-                {/* Future: event/location info here */}
               </span>
             </button>
           )
@@ -286,125 +280,13 @@ function GlanceMonthColumn({ year, month, onDayClick }: GlanceMonthColumnProps) 
   )
 }
 
-// Fullscreen Glance View Portal
-interface FullscreenGlanceProps {
-  year: number
-  onDayClick: (date: Date) => void
-  onClose: () => void
-  navigatePrev: () => void
-  navigateNext: () => void
-}
-
-function FullscreenGlance({
-  year,
-  onDayClick,
-  onClose,
-  navigatePrev,
-  navigateNext,
-}: FullscreenGlanceProps) {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-
-    // Handle escape key
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose()
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault()
-        navigatePrev()
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault()
-        navigateNext()
-      }
-    }
-
-    // Prevent body scroll
-    document.body.style.overflow = 'hidden'
-    window.addEventListener('keydown', handleKeyDown)
-
-    return () => {
-      document.body.style.overflow = ''
-      window.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [onClose, navigatePrev, navigateNext])
-
-  if (!mounted) return null
-
-  const content = (
-    <div className="fixed inset-0 z-50 flex flex-col bg-gradient-to-br from-slate-100 via-blue-50 to-purple-50 dark:from-gray-900 dark:via-slate-900 dark:to-gray-900">
-      {/* Header */}
-      <div className="flex items-center justify-between px-6 py-3 flex-shrink-0 bg-white/80 dark:bg-gray-900/80 backdrop-blur border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={navigatePrev}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            title="Previous year"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            {year}
-          </h1>
-          <button
-            onClick={navigateNext}
-            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            title="Next year"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-          <span className="text-sm text-gray-500 dark:text-gray-400 bg-white/50 dark:bg-gray-800/50 px-3 py-1 rounded-full">
-            Gregorian Calendar
-          </span>
-        </div>
-
-        <button
-          onClick={onClose}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors shadow-sm"
-          title="Exit fullscreen (Esc)"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-          </svg>
-          Exit Fullscreen
-        </button>
-      </div>
-
-      {/* Month columns - takes up remaining space */}
-      <div className="flex-1 flex gap-1 p-3 overflow-x-auto min-h-0">
-        {Array.from({ length: 12 }).map((_, i) => (
-          <GlanceMonthColumn
-            key={i + 1}
-            year={year}
-            month={i + 1}
-            onDayClick={onDayClick}
-          />
-        ))}
-      </div>
-
-      {/* Footer */}
-      <div className="text-center text-xs text-gray-500 dark:text-gray-400 py-2 bg-white/50 dark:bg-gray-900/50 backdrop-blur flex-shrink-0">
-        Click any day to zoom in • Arrow keys navigate years • Esc to exit • T for today
-      </div>
-    </div>
-  )
-
-  return createPortal(content, document.body)
-}
-
 export function YearView() {
-  const [viewMode, setViewMode] = useState<ViewMode>('glance')
+  const [viewMode, setViewMode] = useState<ViewMode>('compact')
   const {
     currentDate,
     setCurrentDate,
     setViewType,
     setTemporalGranularity,
-    navigateByGranularity,
   } = useCalendarStore()
 
   const year = currentDate.getFullYear()
@@ -421,12 +303,10 @@ export function YearView() {
     setTemporalGranularity(TemporalGranularity.DAY)
   }
 
-  const months = 12
-
   // Mock event counts for compact view
   const mockEventCounts = useMemo(() => {
     const counts: Record<number, Record<number, number>> = {}
-    for (let m = 1; m <= months; m++) {
+    for (let m = 1; m <= 12; m++) {
       counts[m] = {}
       for (let d = 1; d <= 28; d++) {
         if (Math.random() > 0.7) {
@@ -435,37 +315,56 @@ export function YearView() {
       }
     }
     return counts
-  }, [months])
+  }, [])
 
-  // Glance mode uses fullscreen portal
+  // Glance mode - inline (fills container, no portal)
   if (viewMode === 'glance') {
     return (
-      <>
-        {/* Placeholder in normal flow */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-8 text-center">
-          <div className="text-gray-500 dark:text-gray-400">
-            <div className="text-lg font-medium mb-2">Glance View Active</div>
-            <div className="text-sm">Fullscreen calendar is displayed. Press Esc to return.</div>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col h-full">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">{year}</h2>
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
+            <button
+              onClick={() => setViewMode('compact')}
+              className="px-2.5 py-1 text-xs font-medium rounded-md transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            >
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode('glance')}
+              className="px-2.5 py-1 text-xs font-medium rounded-md transition-colors bg-white dark:bg-gray-600 shadow-sm"
+            >
+              Glance
+            </button>
           </div>
         </div>
 
-        {/* Fullscreen portal */}
-        <FullscreenGlance
-          year={year}
-          onDayClick={handleDayClick}
-          onClose={() => setViewMode('compact')}
-          navigatePrev={() => navigateByGranularity('prev')}
-          navigateNext={() => navigateByGranularity('next')}
-        />
-      </>
+        {/* Month columns - fills remaining space */}
+        <div className="flex-1 flex gap-0.5 p-2 overflow-x-auto min-h-0">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <GlanceMonthColumn
+              key={i + 1}
+              year={year}
+              month={i + 1}
+              onDayClick={handleDayClick}
+            />
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="text-center text-xs text-gray-400 dark:text-gray-500 py-1.5 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+          Click any day to zoom in
+        </div>
+      </div>
     )
   }
 
   // Compact view - traditional grid layout
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
       {/* Year header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between flex-shrink-0">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
             {year}
@@ -476,26 +375,26 @@ export function YearView() {
         </div>
 
         {/* View mode toggle */}
-        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
+        <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-0.5">
           <button
             onClick={() => setViewMode('compact')}
-            className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors bg-white dark:bg-gray-600 shadow-sm"
+            className="px-2.5 py-1 text-xs font-medium rounded-md transition-colors bg-white dark:bg-gray-600 shadow-sm"
           >
-            Compact
+            Grid
           </button>
           <button
             onClick={() => setViewMode('glance')}
-            className="px-3 py-1.5 text-xs font-medium rounded-md transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+            className="px-2.5 py-1 text-xs font-medium rounded-md transition-colors text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
           >
-            Fullscreen
+            Glance
           </button>
         </div>
       </div>
 
       {/* Month grid */}
-      <div className="p-4">
+      <div className="flex-1 overflow-auto p-4">
         <div className="grid gap-3 grid-cols-4 md:grid-cols-6">
-          {Array.from({ length: months }).map((_, i) => {
+          {Array.from({ length: 12 }).map((_, i) => {
             const month = i + 1
             const isCurrentMonthView = currentMonth === month && currentDate.getFullYear() === year
 
@@ -511,23 +410,23 @@ export function YearView() {
             )
           })}
         </div>
-      </div>
 
-      {/* Legend */}
-      <div className="px-4 pb-4">
-        <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded bg-blue-500" />
-            <span>Today</span>
+        {/* Legend */}
+        <div className="mt-4">
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded bg-blue-500" />
+              <span>Today</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 rounded ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" />
+              <span>Current month</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" />
-            <span>Current month</span>
-          </div>
+          <p className="text-xs text-center text-gray-400 dark:text-gray-500 mt-2">
+            Click any month to zoom in
+          </p>
         </div>
-        <p className="text-xs text-center text-gray-400 dark:text-gray-500 mt-2">
-          Click any month to zoom in • Click &quot;Fullscreen&quot; for year-at-a-glance
-        </p>
       </div>
     </div>
   )

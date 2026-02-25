@@ -42,9 +42,9 @@ export function MonthView() {
   const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
       {/* Month header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {new Date(monthData.year, monthData.month - 1).toLocaleDateString('en-US', {
@@ -67,7 +67,7 @@ export function MonthView() {
       </div>
 
       {/* Calendar grid */}
-      <div className="p-2">
+      <div className="flex-1 overflow-auto p-2">
         {/* Weekday headers */}
         <div className="grid grid-cols-7 gap-px mb-1">
           {weekdays.map((day, i) => (

@@ -2,12 +2,12 @@
 
 import { useEffect, useRef, useMemo } from 'react'
 import L from 'leaflet'
-import { MapContainer, TileLayer, CircleMarker, Popup, useMap, useMapEvents } from 'react-leaflet'
+import { MapContainer, TileLayer, CircleMarker, Polyline, Popup, Tooltip, useMap, useMapEvents } from 'react-leaflet'
 import { useCalendarStore, useEffectiveSpatialGranularity } from '@/lib/store'
 import { useMapState } from '@/hooks/useMapState'
 import { getSemanticLocationLabel } from '@/lib/location'
 import { SpatialGranularity, SPATIAL_TO_LEAFLET_ZOOM, GRANULARITY_LABELS, leafletZoomToSpatial } from '@/lib/types'
-import type { EventListItem, UnifiedEvent } from '@/lib/types'
+import type { EventListItem } from '@/lib/types'
 import { clsx } from 'clsx'
 
 // Fix Leaflet default marker icons for Next.js bundling
@@ -62,18 +62,12 @@ function EventMarkers({ events }: { events: EventListItem[] }) {
   const spatialGranularity = useEffectiveSpatialGranularity()
   const isBroadZoom = spatialGranularity <= SpatialGranularity.COUNTRY
 
-  // Group events with coordinates by semantic location at broad zooms
   const markers = useMemo(() => {
-    // Filter events that have coordinate-like data embedded in location_raw
-    // (EventListItem doesn't have lat/lng directly, so we pass through all events
-    // and rely on the full UnifiedEvent type if available)
-    const eventsWithCoords = events.filter((e) => {
-      const ev = e as EventListItem & { latitude?: number | null; longitude?: number | null }
-      return ev.latitude != null && ev.longitude != null
-    }) as (EventListItem & { latitude: number; longitude: number })[]
+    const eventsWithCoords = events.filter(
+      (e) => e.latitude != null && e.longitude != null
+    ) as (EventListItem & { latitude: number; longitude: number })[]
 
     if (!isBroadZoom) {
-      // Fine zoom: individual markers
       return eventsWithCoords.map((e) => ({
         key: e.id,
         lat: e.latitude,
@@ -165,6 +159,83 @@ function EventMarkers({ events }: { events: EventListItem[] }) {
   )
 }
 
+/**
+ * Draws dashed polylines between chronologically ordered events that have
+ * different locations, representing transit/travel between them.
+ */
+function TransitLines({ events }: { events: EventListItem[] }) {
+  const spatialGranularity = useEffectiveSpatialGranularity()
+
+  const segments = useMemo(() => {
+    // Sort events chronologically, only those with coordinates
+    const sorted = events
+      .filter((e) => e.latitude != null && e.longitude != null)
+      .sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()) as (EventListItem & { latitude: number; longitude: number })[]
+
+    if (sorted.length < 2) return []
+
+    const lines: {
+      key: string
+      from: [number, number]
+      to: [number, number]
+      fromLabel: string
+      toLabel: string
+      color: string
+      isTravel: boolean
+    }[] = []
+
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const curr = sorted[i]
+      const next = sorted[i + 1]
+
+      // Skip if same location (within ~1km)
+      const latDiff = Math.abs(curr.latitude - next.latitude)
+      const lngDiff = Math.abs(curr.longitude - next.longitude)
+      if (latDiff < 0.01 && lngDiff < 0.01) continue
+
+      // Check if this is a travel/transit event (by source)
+      const isTravel = curr.source === 'travel' || next.source === 'travel'
+
+      lines.push({
+        key: `${curr.id}-${next.id}`,
+        from: [curr.latitude, curr.longitude],
+        to: [next.latitude, next.longitude],
+        fromLabel: curr.location_raw || curr.title,
+        toLabel: next.location_raw || next.title,
+        color: isTravel ? '#f97316' : '#94a3b8',
+        isTravel,
+      })
+    }
+
+    return lines
+  }, [events])
+
+  return (
+    <>
+      {segments.map((seg) => (
+        <Polyline
+          key={seg.key}
+          positions={[seg.from, seg.to]}
+          pathOptions={{
+            color: seg.color,
+            weight: seg.isTravel ? 3 : 2,
+            opacity: seg.isTravel ? 0.8 : 0.4,
+            dashArray: seg.isTravel ? '8, 8' : '4, 8',
+          }}
+        >
+          <Tooltip sticky>
+            <div className="text-xs">
+              <span className="font-medium">{seg.fromLabel}</span>
+              <span className="mx-1 text-gray-400">&rarr;</span>
+              <span className="font-medium">{seg.toLabel}</span>
+            </div>
+          </Tooltip>
+        </Polyline>
+      ))}
+    </>
+  )
+}
+
 export function SpatioTemporalMap({ events }: SpatioTemporalMapProps) {
   const { center, zoom } = useMapState(events)
   const spatialGranularity = useEffectiveSpatialGranularity()
@@ -183,6 +254,7 @@ export function SpatioTemporalMap({ events }: SpatioTemporalMapProps) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <MapController center={center} zoom={zoom} />
+        <TransitLines events={events} />
         <EventMarkers events={events} />
       </MapContainer>
 
@@ -203,7 +275,7 @@ export function SpatioTemporalMap({ events }: SpatioTemporalMapProps) {
           )}
           title={zoomCoupled ? 'Unlink spatial from temporal zoom' : 'Link spatial to temporal zoom'}
         >
-          {zoomCoupled ? '🔗' : '🔓'}
+          {zoomCoupled ? '\uD83D\uDD17' : '\uD83D\uDD13'}
         </button>
       </div>
     </div>

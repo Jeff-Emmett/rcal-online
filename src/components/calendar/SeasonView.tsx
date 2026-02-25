@@ -120,9 +120,9 @@ export function SeasonView() {
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 h-full flex flex-col">
       {/* Season header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white text-center">
           {seasonName} {year}
         </h2>
@@ -133,8 +133,8 @@ export function SeasonView() {
       </div>
 
       {/* Three month grid */}
-      <div className="p-4">
-        <div className="flex gap-4">
+      <div className="flex-1 overflow-auto p-4">
+        <div className="flex gap-4 h-full">
           {quarterMonths.map((month) => (
             <MonthGrid
               key={month}
@@ -147,7 +147,7 @@ export function SeasonView() {
       </div>
 
       {/* Navigation hint */}
-      <div className="px-4 pb-4">
+      <div className="px-4 pb-3 pt-1 flex-shrink-0">
         <p className="text-xs text-center text-gray-400 dark:text-gray-500">
           Click any day to zoom in • Use arrow keys to navigate quarters
         </p>
