@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { AppSwitcher } from '@/components/AppSwitcher'
+import { EcosystemFooter } from '@/components/EcosystemFooter'
 
 export default function LandingPage() {
   return (
@@ -168,35 +169,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-800 px-6 py-10">
-        <div className="mx-auto max-w-5xl">
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mb-4">
-            <span className="text-sm text-gray-500 font-medium">r* Ecosystem</span>
-            <a href="https://rspace.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rSpace</a>
-            <a href="https://rmaps.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rMaps</a>
-            <a href="https://rnotes.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rNotes</a>
-            <a href="https://rvote.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rVote</a>
-            <a href="https://rfunds.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rFunds</a>
-            <a href="https://rtrips.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rTrips</a>
-            <a href="https://rcart.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rCart</a>
-            <a href="https://rchoices.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rChoices</a>
-            <a href="https://rwallet.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rWallet</a>
-            <a href="https://rfiles.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rFiles</a>
-            <a href="https://rtube.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rTube</a>
-            <a href="https://rcal.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rCal</a>
-            <a href="https://rnetwork.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rNetwork</a>
-            <a href="https://rinbox.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rInbox</a>
-            <a href="https://rstack.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rStack</a>
-            <a href="https://rauctions.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rAuctions</a>
-            <a href="https://rpubs.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rPubs</a>
-            <a href="https://rdata.online" className="text-sm text-gray-500 hover:text-gray-300 transition-colors">rData</a>
-          </div>
-          <p className="text-center text-xs text-gray-600">
-            Part of the r* ecosystem — collaborative tools for communities.
-          </p>
-        </div>
-      </footer>
+      <EcosystemFooter current="rCal" />
     </div>
   )
 }
