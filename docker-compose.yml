@@ -7,7 +7,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - NEXT_PUBLIC_ENCRYPTID_SERVER_URL=${NEXT_PUBLIC_ENCRYPTID_SERVER_URL:-https://encryptid.jeffemmett.com}
+      - NEXT_PUBLIC_ENCRYPTID_SERVER_URL=${NEXT_PUBLIC_ENCRYPTID_SERVER_URL:-https://auth.ridentity.online}
       - INFISICAL_CLIENT_ID=${INFISICAL_CLIENT_ID}
       - INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET}
       - INFISICAL_PROJECT_SLUG=rcal-online

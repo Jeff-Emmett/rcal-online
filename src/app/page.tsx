@@ -32,7 +32,7 @@ export default function LandingPage() {
               Create Calendar
             </Link>
             <a
-              href="https://encryptid.jeffemmett.com"
+              href="https://auth.ridentity.online"
               className="text-sm text-gray-400 hover:text-white transition-colors"
             >
               Sign In
