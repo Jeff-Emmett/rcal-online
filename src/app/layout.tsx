@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import { Providers } from '@/providers'
+import InfoPopup from "@/components/InfoPopup";
+import { LANDING_HTML } from "@/components/landing-content";
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const jetbrainsMono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono' })
@@ -28,6 +30,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <InfoPopup appName="rCal" appIcon="📅" landingHtml={LANDING_HTML} />
       </body>
     </html>
   )
