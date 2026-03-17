@@ -1,4 +1,5 @@
 import { Header } from '@/components/Header'
+import { TimezoneSync } from '@/components/TimezoneSync'
 
 export default function CalendarLayout({
   children,
@@ -8,6 +9,7 @@ export default function CalendarLayout({
   return (
     <>
       <Header current="cal" />
+      <TimezoneSync />
       {children}
     </>
   )

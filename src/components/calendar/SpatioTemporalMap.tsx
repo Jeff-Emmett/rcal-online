@@ -6,6 +6,7 @@ import { MapContainer, TileLayer, CircleMarker, Polyline, Popup, Tooltip, useMap
 import { useCalendarStore, useEffectiveSpatialGranularity } from '@/lib/store'
 import { useMapState } from '@/hooks/useMapState'
 import { getSemanticLocationLabel } from '@/lib/location'
+import { formatEventTime } from '@/lib/time-format'
 import { SpatialGranularity, SPATIAL_TO_LEAFLET_ZOOM, GRANULARITY_LABELS, leafletZoomToSpatial } from '@/lib/types'
 import type { EventListItem } from '@/lib/types'
 import { clsx } from 'clsx'
@@ -60,6 +61,7 @@ function MapController({ center, zoom }: { center: [number, number]; zoom: numbe
 /** Renders event markers, clustering at broad zooms. */
 function EventMarkers({ events }: { events: EventListItem[] }) {
   const spatialGranularity = useEffectiveSpatialGranularity()
+  const viewerTimezone = useCalendarStore((s) => s.viewerTimezone)
   const isBroadZoom = spatialGranularity <= SpatialGranularity.COUNTRY
 
   const markers = useMemo(() => {
@@ -143,10 +145,7 @@ function EventMarkers({ events }: { events: EventListItem[] }) {
                   )}
                   {!marker.events[0].all_day && (
                     <div className="text-xs text-gray-500 mt-0.5">
-                      {new Date(marker.events[0].start).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                      })}
+                      {formatEventTime(marker.events[0].start, viewerTimezone)}
                     </div>
                   )}
                 </>

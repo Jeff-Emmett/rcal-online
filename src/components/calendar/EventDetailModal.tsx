@@ -5,7 +5,8 @@ import { useQuery } from '@tanstack/react-query'
 import { getEvent } from '@/lib/api'
 import { getSemanticLocationLabel } from '@/lib/location'
 import type { UnifiedEvent } from '@/lib/types'
-import { useEffectiveSpatialGranularity } from '@/lib/store'
+import { useCalendarStore, useEffectiveSpatialGranularity } from '@/lib/store'
+import { formatEventTime } from '@/lib/time-format'
 import { clsx } from 'clsx'
 
 interface EventDetailModalProps {
@@ -19,12 +20,10 @@ export function EventDetailModal({ eventId, onClose }: EventDetailModalProps) {
     queryFn: () => getEvent(eventId) as Promise<UnifiedEvent>,
   })
   const effectiveSpatial = useEffectiveSpatialGranularity()
+  const viewerTimezone = useCalendarStore((s) => s.viewerTimezone)
 
   const formatTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-    })
+    return formatEventTime(dateStr, viewerTimezone)
   }
 
   const formatDate = (dateStr: string) => {

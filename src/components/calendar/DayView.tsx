@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { useCalendarStore, useEffectiveSpatialGranularity } from '@/lib/store'
 import { getSemanticLocationLabel } from '@/lib/location'
 import { useMonthEvents } from '@/hooks/useEvents'
+import { formatEventTime } from '@/lib/time-format'
 import type { EventListItem } from '@/lib/types'
 import { EventDetailModal } from './EventDetailModal'
 import { clsx } from 'clsx'
@@ -38,7 +39,7 @@ function getEventPosition(event: EventListItem, dayStart: Date) {
 }
 
 export function DayView() {
-  const { currentDate, selectedEventId, setSelectedEventId, hiddenSources } = useCalendarStore()
+  const { currentDate, selectedEventId, setSelectedEventId, hiddenSources, viewerTimezone } = useCalendarStore()
   const effectiveSpatial = useEffectiveSpatialGranularity()
 
   const year = currentDate.getFullYear()
@@ -182,15 +183,9 @@ export function DayView() {
                 >
                   <div className="text-xs font-medium truncate">{event.title}</div>
                   <div className="text-[10px] opacity-75 truncate">
-                    {new Date(event.start).toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
+                    {formatEventTime(event.start, viewerTimezone)}
                     {' - '}
-                    {new Date(event.end).toLocaleTimeString('en-US', {
-                      hour: 'numeric',
-                      minute: '2-digit',
-                    })}
+                    {formatEventTime(event.end, viewerTimezone)}
                     {locationLabel && ` \u00B7 ${locationLabel}`}
                   </div>
                 </button>

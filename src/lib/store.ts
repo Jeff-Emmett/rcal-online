@@ -69,6 +69,10 @@ interface CalendarState {
   setZoomCoupled: (coupled: boolean) => void
   toggleZoomCoupled: () => void
 
+  // Viewer timezone
+  viewerTimezone: string
+  setViewerTimezone: (tz: string) => void
+
   // r* tool context
   rCalContext: RCalContext | null
   setRCalContext: (context: RCalContext | null) => void
@@ -250,13 +254,17 @@ export const useCalendarStore = create<CalendarState>()(
           }
         }),
 
+      // Viewer timezone
+      viewerTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+      setViewerTimezone: (viewerTimezone) => set({ viewerTimezone }),
+
       // r* tool context
       rCalContext: null,
       setRCalContext: (rCalContext) => set({ rCalContext }),
     }),
     {
       name: 'calendar-store',
-      version: 3,
+      version: 4,
       partialize: (state) => ({
         calendarType: state.calendarType,
         viewType: state.viewType,
@@ -267,6 +275,7 @@ export const useCalendarStore = create<CalendarState>()(
         hiddenSources: state.hiddenSources,
         mapVisible: state.mapVisible,
         zoomCoupled: state.zoomCoupled,
+        viewerTimezone: state.viewerTimezone,
       }),
     }
   )
