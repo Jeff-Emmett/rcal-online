@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { useCalendarStore, useEffectiveSpatialGranularity } from '@/lib/store'
 import { getSemanticLocationLabel } from '@/lib/location'
 import { useMonthEvents } from '@/hooks/useEvents'
+import { formatEventTime } from '@/lib/time-format'
 import { TemporalGranularity } from '@/lib/types'
 import type { EventListItem } from '@/lib/types'
 import { EventDetailModal } from './EventDetailModal'
@@ -57,6 +58,7 @@ export function WeekView() {
     setCurrentDate,
     setTemporalGranularity,
     hiddenSources,
+    viewerTimezone,
   } = useCalendarStore()
   const effectiveSpatial = useEffectiveSpatialGranularity()
 
@@ -267,10 +269,7 @@ export function WeekView() {
                       >
                         <div className="text-[10px] font-medium truncate">{event.title}</div>
                         <div className="text-[9px] opacity-75 truncate">
-                          {new Date(event.start).toLocaleTimeString('en-US', {
-                            hour: 'numeric',
-                            minute: '2-digit',
-                          })}
+                          {formatEventTime(event.start, viewerTimezone)}
                         </div>
                       </button>
                     )

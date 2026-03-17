@@ -1,8 +1,9 @@
 'use client'
 
-import { ChevronLeft, ChevronRight, Menu, Calendar, Moon, Settings, MapPin, ZoomIn, ZoomOut } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Menu, Calendar, Moon, Settings, MapPin, ZoomIn, ZoomOut, Globe } from 'lucide-react'
 import { useCalendarStore } from '@/lib/store'
 import { TemporalGranularity, TEMPORAL_GRANULARITY_LABELS } from '@/lib/types'
+import { getTimezoneAbbreviation } from '@/lib/time-format'
 import { clsx } from 'clsx'
 import { AppSwitcher } from '@/components/AppSwitcher'
 import { ViewSwitcher } from './ViewSwitcher'
@@ -23,6 +24,7 @@ export function CalendarHeader({ onToggleSidebar, sidebarOpen }: CalendarHeaderP
     zoomOut,
     showLunarOverlay,
     setShowLunarOverlay,
+    viewerTimezone,
   } = useCalendarStore()
 
   // Format the display based on temporal granularity
@@ -141,6 +143,15 @@ export function CalendarHeader({ onToggleSidebar, sidebarOpen }: CalendarHeaderP
         {/* View preset switcher */}
         <div className="flex items-center gap-3">
           <ViewSwitcher />
+
+          {/* Timezone indicator */}
+          <div
+            className="flex items-center gap-1 px-2 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-600 dark:text-gray-300"
+            title={viewerTimezone}
+          >
+            <Globe className="w-3.5 h-3.5" />
+            {getTimezoneAbbreviation(viewerTimezone)}
+          </div>
 
           {/* Show lunar overlay toggle */}
           <button

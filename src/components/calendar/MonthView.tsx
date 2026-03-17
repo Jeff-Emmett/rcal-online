@@ -4,6 +4,7 @@ import { useMemo } from 'react'
 import { useCalendarStore, useEffectiveSpatialGranularity } from '@/lib/store'
 import { getSemanticLocationLabel } from '@/lib/location'
 import { useMonthEvents, groupEventsByDate } from '@/hooks/useEvents'
+import { formatEventTime } from '@/lib/time-format'
 import type { EventListItem } from '@/lib/types'
 import { EventDetailModal } from './EventDetailModal'
 import { clsx } from 'clsx'
@@ -17,7 +18,7 @@ interface DayCell {
 }
 
 export function MonthView() {
-  const { currentDate, showLunarOverlay, selectedEventId, setSelectedEventId, hiddenSources } = useCalendarStore()
+  const { currentDate, showLunarOverlay, selectedEventId, setSelectedEventId, hiddenSources, viewerTimezone } = useCalendarStore()
   const effectiveSpatial = useEffectiveSpatialGranularity()
 
   const year = currentDate.getFullYear()
@@ -95,6 +96,7 @@ export function MonthView() {
               isLoading={isLoading}
               onEventClick={setSelectedEventId}
               effectiveSpatial={effectiveSpatial}
+              viewerTimezone={viewerTimezone}
             />
           ))}
         </div>
@@ -118,6 +120,7 @@ function DayCellComponent({
   isLoading,
   onEventClick,
   effectiveSpatial,
+  viewerTimezone,
 }: {
   day: DayCell
   showLunarOverlay: boolean
@@ -125,6 +128,7 @@ function DayCellComponent({
   isLoading: boolean
   onEventClick: (eventId: string | null) => void
   effectiveSpatial: number
+  viewerTimezone: string
 }) {
   const isWeekend = day.date.getDay() === 0 || day.date.getDay() === 6
   const maxVisibleEvents = 3
@@ -180,10 +184,7 @@ function DayCellComponent({
                 >
                   {!event.all_day && (
                     <span className="opacity-75 mr-1">
-                      {new Date(event.start).toLocaleTimeString('en-US', {
-                        hour: 'numeric',
-                        minute: '2-digit',
-                      })}
+                      {formatEventTime(event.start, viewerTimezone)}
                     </span>
                   )}
                   {event.title}
