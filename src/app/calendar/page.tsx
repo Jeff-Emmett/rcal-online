@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, Suspense } from 'react'
 import { Calendar as CalendarIcon, MapPin, Clock, ZoomIn, ZoomOut, Link2, Unlink2 } from 'lucide-react'
 import { TemporalZoomController } from '@/components/calendar'
 import { CalendarHeader } from '@/components/calendar/CalendarHeader'
 import { CalendarSidebar } from '@/components/calendar/CalendarSidebar'
+import { ConnectCalendarBanner } from '@/components/ConnectCalendarBanner'
 import { TabLayout } from '@/components/ui/TabLayout'
 import { TemporalTab } from '@/components/tabs/TemporalTab'
 import { SpatialTab } from '@/components/tabs/SpatialTab'
@@ -76,6 +77,9 @@ export default function Home() {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
+        <Suspense fallback={null}>
+          <ConnectCalendarBanner />
+        </Suspense>
         <CalendarHeader
           onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           sidebarOpen={sidebarOpen}
