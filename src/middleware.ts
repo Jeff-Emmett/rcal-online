@@ -5,10 +5,11 @@ import type { NextRequest } from 'next/server';
  * Middleware to handle subdomain-based routing.
  *
  * Routes:
- * - rcal.online -> landing page (/)
- * - www.rcal.online -> landing page (/)
+ * - rspace.online/rcal/* -> primary (basePath handles this)
+ * - rcal.online -> redirected by rspace-redirects to rspace.online/rcal
  * - demo.rcal.online -> calendar demo (/demo)
  * - <space>.rcal.online -> rewrite to /s/<space>
+ * - <space>.rspace.online/rcal/* -> rewrite to /s/<space>
  *
  * Also handles localhost for development.
  */
@@ -18,12 +19,22 @@ export function middleware(request: NextRequest) {
 
   let subdomain: string | null = null;
 
-  // Match production: <sub>.rcal.online
-  const match = hostname.match(/^([a-z0-9][a-z0-9-]*[a-z0-9]|[a-z0-9])\.\w+\.online/);
-  if (match && match[1] !== 'www') {
-    subdomain = match[1];
-  } else if (hostname.includes('localhost')) {
-    // Development: <sub>.localhost:port
+  // Match subdomain from rcal.online: <sub>.rcal.online
+  const rcalMatch = hostname.match(/^([a-z0-9][a-z0-9-]*[a-z0-9]|[a-z0-9])\.rcal\.online/);
+  if (rcalMatch && rcalMatch[1] !== 'www') {
+    subdomain = rcalMatch[1];
+  }
+
+  // Match subdomain from rspace.online: <sub>.rspace.online
+  if (!subdomain) {
+    const rspaceMatch = hostname.match(/^([a-z0-9][a-z0-9-]*[a-z0-9]|[a-z0-9])\.rspace\.online/);
+    if (rspaceMatch && rspaceMatch[1] !== 'www' && rspaceMatch[1] !== 'registry') {
+      subdomain = rspaceMatch[1];
+    }
+  }
+
+  // Development: <sub>.localhost:port
+  if (!subdomain && hostname.includes('localhost')) {
     const parts = hostname.split('.localhost')[0].split('.');
     if (parts.length > 0 && parts[0] !== 'localhost') {
       subdomain = parts[parts.length - 1];
@@ -31,7 +42,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (subdomain && subdomain.length > 0) {
-    // demo.rcal.online → serve the calendar demo
+    // demo subdomain → serve the calendar demo
     if (subdomain === 'demo') {
       if (url.pathname === '/') {
         url.pathname = '/demo';

@@ -11,6 +11,9 @@ services:
       - INFISICAL_CLIENT_ID=${INFISICAL_CLIENT_ID}
       - INFISICAL_CLIENT_SECRET=${INFISICAL_CLIENT_SECRET}
       - INFISICAL_PROJECT_SLUG=rcal-online
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_OAUTH_REDIRECT_URI=https://rspace.online/rcal/api/auth/google/callback
     depends_on:
       rcal-postgres:
         condition: service_healthy
@@ -23,10 +26,16 @@ services:
       - /tmp
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.rcal.rule=Host(`rcal.jeffemmett.com`) || Host(`rcal.online`) || Host(`www.rcal.online`) || Host(`booking.xhiva.art`) || HostRegexp(`{subdomain:[a-z0-9-]+}.rcal.online`)"
-      - "traefik.http.routers.rcal.priority=130"
+      # Primary: path-based routing under rspace.online
+      - "traefik.http.routers.rcal.rule=(Host(`rspace.online`) || HostRegexp(`{subdomain:[a-z0-9-]+}.rspace.online`)) && PathPrefix(`/rcal`)"
+      - "traefik.http.routers.rcal.priority=140"
       - "traefik.http.routers.rcal.entrypoints=web"
       - "traefik.http.services.rcal.loadbalancer.server.port=3000"
+      # Subdomain routing for spaces: {space}.rcal.online
+      - "traefik.http.routers.rcal-spaces.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.rcal.online`)"
+      - "traefik.http.routers.rcal-spaces.priority=130"
+      - "traefik.http.routers.rcal-spaces.entrypoints=web"
+      - "traefik.http.routers.rcal-spaces.service=rcal"
     networks:
       - traefik-public
       - rcal-internal
